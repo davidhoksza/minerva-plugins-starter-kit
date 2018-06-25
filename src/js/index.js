@@ -1,7 +1,7 @@
 require('../css/styles.css');
 
 const pluginName = 'starter-kit';
-const pluginVersion = '1.0.0';
+const pluginVersion = '1.0.1';
 
 const minervaProxyServer = 'https://minerva-dev.lcsb.uni.lu/minerva-proxy/';
 
@@ -24,6 +24,7 @@ const register = function(_minerva) {
     console.log('registering ' + pluginName + ' plugin');
 
     $(".tab-content").css('position', 'relative');
+
     minervaProxy = _minerva;
     pluginContainer = $(minervaProxy.element);
     pluginContainerId = pluginContainer.attr('id');
@@ -119,10 +120,11 @@ function initMainPageStructure(){
 
     container.append('<hr>');
     container.append('<h4>Query UniProt API</h4>');
-    container.append('<button type="button" class="btn-uniprot btn btn-primary btn-default btn-block">Retrieve from UniProt</button>');
+    container.append('<button type="button" class="btn-uniprot btn btn-primary btn-default btn-block" ' +
+        'title="Queries UniProt using the element selected from the map">Retrieve from UniProt</button>');
     container.append(`
         <div class="panel panel-default panel-uniprot">
-            <div class="panel-heading">Uniprot records for the picked object</div>
+            <div class="panel-heading">Uniprot records for the selected element</div>
             <div class="panel-body">
                 <code></code>
             </div>
@@ -256,7 +258,9 @@ function focusOnSelected(pickedRandomly = false) {
 }
 
 function retrieveUniprot() {
-    const query = pluginContainer.find('.panel-randomly-picked .panel-body').text();
+    let query = pluginContainer.find('.panel-events .panel-body').text();
+    query = query.substring(0,query.indexOf(' - '));
+    console.log(query);
     $.ajax({
         type: 'GET',
         url: 'https://www.uniprot.org/uniprot/?query=' + query + '&sort=score&columns=id,entry%20name,reviewed,protein%20names,3d,genes,organism,length&format=tab&limit=10'
